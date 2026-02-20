@@ -200,6 +200,10 @@ def index_set(set_id):
     conn.close()
     print("Indexing complete.")
 
+def index_selected_sets(sets):
+    for set_id in sets:
+        index_set(set_id)
+
 if __name__ == "__main__":
     # Base Set ID on TCGDex is "base1"
-    index_set("bw11")
+    index_selected_sets(["me01", "sm9", "bw11"])

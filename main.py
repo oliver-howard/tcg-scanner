@@ -104,25 +104,16 @@ def draw_info_overlay(frame, info):
         y_offset += 30
 
 def main():
-    cap = None
-    for i in range(5):
-        print(f"Trying to open camera at index {i}...")
-        temp_cap = cv2.VideoCapture(i, cv2.CAP_DSHOW)
-        if temp_cap.isOpened():
-            ret, _ = temp_cap.read()
-            if ret:
-                cap = temp_cap
-                break
-            else:
-                temp_cap.release()
+    cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
                 
     if cap is None or not cap.isOpened():
         print("Error: Could not open any webcam.")
         return
         
-    # Request a 16:9 widescreen resolution to prevent the camera from defaulting to a squashed 4:3 aspect ratio
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    # Request a 4K resolution (3840x2160) to force the camera to its absolute maximum resolution.
+    # OpenCV will automatically clamp these values to whatever the maximum supported resolution of the webcam actually is.
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 3840)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 2160)
         
     print("=====================================================")
     print("Advanced TCG Scanner Pipeline Active!")
@@ -130,6 +121,8 @@ def main():
     print("Press 's' to scan the card inside the box.")
     print("Press 'q' to quit the application.")
     print("=====================================================")
+    
+    cv2.namedWindow("TCG Scanner", cv2.WINDOW_NORMAL)
     
     while True:
         ret, frame = cap.read()

@@ -7,8 +7,16 @@ def find_card_contour(frame):
     Returns the contour (numpy array) or None.
     """
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    
+    # Revert to standard blur
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-    edges = cv2.Canny(blurred, 50, 150)
+    
+    # Use Canny with lower thresholds to pick up faint silver borders
+    edges = cv2.Canny(blurred, 30, 100)
+    
+    # Dilate the edges to connect any broken lines from holo reflections
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    edges = cv2.dilate(edges, kernel, iterations=1)
     
     contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
@@ -20,12 +28,18 @@ def find_card_contour(frame):
     
     for c in contours:
         peri = cv2.arcLength(c, True)
-        approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+        
+        # Increase the approximation epsilon from 0.02 to 0.05 to tolerate corners rounded by dilation
+        approx = cv2.approxPolyDP(c, 0.05 * peri, True)
         
         if len(approx) == 4:
             area = cv2.contourArea(approx)
             if area > 10000: # Tune this threshold depending on resolution
-                return approx
+                # Prevent warped thin slivers (like edge artifacts) from being detected as cards
+                x, y, w, h = cv2.boundingRect(approx)
+                aspectRatio = float(w) / h
+                if 0.5 <= aspectRatio <= 2.0:
+                    return approx
                 
     return None
 

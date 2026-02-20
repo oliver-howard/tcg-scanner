@@ -5,7 +5,7 @@ import re
 
 # Initialize the EasyOCR reader once to avoid reloading the model on every frame.
 print("Initializing EasyOCR... (This may take a moment down downloading models)")
-reader = easyocr.Reader(['en'], gpu=False)
+reader = easyocr.Reader(['en'], gpu=True)
 
 def extract_regional_text(image, region_type):
     """
