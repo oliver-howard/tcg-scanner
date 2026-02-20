@@ -113,6 +113,10 @@ def main():
         print("Error: Could not open any webcam.")
         return
         
+    # Request a 16:9 widescreen resolution to prevent the camera from defaulting to a squashed 4:3 aspect ratio
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        
     print("=====================================================")
     print("Advanced TCG Scanner Pipeline Active!")
     print("Hold a card up to the camera and wait for the green box.")
