@@ -36,7 +36,7 @@ def init_models():
     # Load all embeddings from SQLite into memory for FAISS
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT id, name, set_name, embedding FROM cards")
+    cursor.execute("SELECT * FROM cards")
     rows = cursor.fetchall()
     conn.close()
     
@@ -52,7 +52,11 @@ def init_models():
     ids = []
     
     for i, row in enumerate(rows):
-        card_id, name, set_name, emb_blob = row
+        (card_id, localId, name, category, illustrator, rarity, set_name,
+         v_normal, v_reverse, v_holo, v_1st,
+         hp, types, evolveFrom, description, level, stage,
+         phash, emb_blob) = row
+         
         # Reconstruct numpy array from BLOB
         emb = np.frombuffer(emb_blob, dtype=np.float32)
         
@@ -63,8 +67,24 @@ def init_models():
         ids.append(i)
         card_metadata.append({
             "id": card_id,
+            "localId": localId,
             "name": name,
-            "set_name": set_name
+            "category": category,
+            "illustrator": illustrator,
+            "rarity": rarity,
+            "set_name": set_name,
+            "variants": {
+                "normal": bool(v_normal),
+                "reverse": bool(v_reverse),
+                "holo": bool(v_holo),
+                "firstEdition": bool(v_1st)
+            },
+            "hp": hp,
+            "types": types.split(",") if types else [],
+            "evolveFrom": evolveFrom,
+            "description": description,
+            "level": level,
+            "stage": stage
         })
         
     faiss_index.add_with_ids(np.array(embeddings), np.array(ids))

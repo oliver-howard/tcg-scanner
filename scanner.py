@@ -59,9 +59,9 @@ def four_point_transform(image, pts):
     maxHeight = max(int(heightA), int(heightB))
     
     # Standard Pokemon card ratio
-    # Coerce to a fixed grid size of 480x680 for identical neural embeddings and OCR regions.
-    finalWidth = 480
-    finalHeight = 680
+    # Coerce to a high-resolution fixed grid size of 960x1360 for identical neural embeddings and crystal clear OCR regions.
+    finalWidth = 960
+    finalHeight = 1360
     
     dst = np.array([
         [0, 0],

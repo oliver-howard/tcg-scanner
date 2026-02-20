@@ -43,6 +43,13 @@ def background_scan(warped_img):
         features = extract_card_features(warped_img)
         
         name = features["name"]
+        set_number = features["set_number"]
+        
+        print("\n--- OCR Region Extraction Results ---")
+        print(f"Extracted Name: '{name}'")
+        print(f"Extracted Set Number: '{set_number}'")
+        print("-------------------------------------\n")
+        
         if not name:
             current_card_info = {"status": "Failed: Could not recognize card name."}
             return
@@ -136,6 +143,26 @@ def main():
         if contour is not None:
             cv2.drawContours(frame, [contour], -1, (0, 255, 0), 2)
             flat_card = four_point_transform(frame, contour)
+            
+            # --- Draw OCR Debugging Boxes ---
+            fh, fw = flat_card.shape[:2]
+            
+            # Name bounding box (Red)
+            # Left 15% to Right 75%, Top 2% to Top 12%
+            cv2.rectangle(flat_card, 
+                          (int(fw * 0.15), int(fh * 0.02)), 
+                          (int(fw * 0.75), int(fh * 0.12)), 
+                          (0, 0, 255), 2)
+                          
+            # Set Number bounding box (Red)
+            # Left 3% to Right 97%, Bottom 88% to Bottom 99%
+            cv2.rectangle(flat_card, 
+                          (int(fw * 0.03), int(fh * 0.88)), 
+                          (int(fw * 0.97), int(fh * 0.99)), 
+                          (0, 0, 255), 2)
+            
+            # Show the cropped perspective card in its own tiny window
+            cv2.imshow("Flattened Crop", cv2.resize(flat_card, (240, 340)))
             
         draw_info_overlay(frame, current_card_info)
         cv2.imshow("TCG Scanner", frame)
