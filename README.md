@@ -1,6 +1,6 @@
 # TCG Scanner
 
-A webcam-based trading card scanner that identifies cards from a live camera feed.
+A webcam-based Pokémon trading card scanner that identifies cards from a live camera feed.
 
 The scanner detects and straightens a card image, then tries a few matching methods in order: perceptual hashing for exact artwork, image embeddings for close matches, and OCR plus an API lookup as a fallback.
 
